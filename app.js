@@ -1,0 +1,136 @@
+const statusBadge = document.getElementById("status");
+const transcriptEl = document.getElementById("transcript");
+const responseEl = document.getElementById("response");
+
+let isSleeping = false;
+let inactivityTimer = null;
+let OPENAI_API_KEY = null; // ← ahora será dinámica
+
+// ================== CONFIG ==================
+const INACTIVITY_TIME = 5000; // 5 segundos
+const MOCKAPI_URL = "https://68e538728e116898997ee561.mockapi.io/apikey";
+
+// ================== SPEECH API ==================
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+
+recognition.lang = "es-ES";
+recognition.continuous = true;
+recognition.interimResults = false;
+
+// ================== OBTENER API KEY ==================
+async function fetchApiKey() {
+    try {
+        const response = await fetch(MOCKAPI_URL);
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+            OPENAI_API_KEY = data[0].api_key;
+            console.log("✅ API Key cargada correctamente desde MockAPI");
+        } else {
+            console.error("❌ No se encontró API Key en MockAPI");
+        }
+    } catch (error) {
+        console.error("❌ Error obteniendo API Key:", error);
+    }
+}
+
+// ================== INACTIVITY ==================
+function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => {
+        goToSleep();
+    }, INACTIVITY_TIME);
+}
+
+function goToSleep() {
+    isSleeping = true;
+    statusBadge.textContent = "SUSPENDIDO";
+    statusBadge.className = "badge bg-secondary";
+    responseEl.textContent = "Sistema suspendido. Di 'COSMO' para despertar.";
+}
+
+function wakeUp() {
+    isSleeping = false;
+    statusBadge.textContent = "ACTIVO";
+    statusBadge.className = "badge bg-success";
+    responseEl.textContent = "Sistema activado. Escuchando órdenes...";
+}
+
+// ================== OPENAI ==================
+async function interpretCommand(text) {
+
+    if (!OPENAI_API_KEY) {
+        return "Error: API Key no disponible";
+    }
+
+    const prompt = `
+Devuelve SOLO una de estas opciones exactamente:
+avanzar, retroceder, detener, vuelta derecha, vuelta izquierda,
+90° derecha, 90° izquierda, 360° derecha, 360° izquierda
+
+Si no corresponde, devuelve exactamente:
+Orden no reconocida
+
+Texto: "${text}"
+`;
+
+    try {
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${OPENAI_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: "gpt-4o-mini",
+                messages: [{ role: "user", content: prompt }],
+                temperature: 0
+            })
+        });
+
+        const data = await response.json();
+        return data.choices[0].message.content.trim();
+
+    } catch (error) {
+        console.error("Error llamando a OpenAI:", error);
+        return "Error al procesar la orden";
+    }
+}
+
+// ================== RECOGNITION EVENTS ==================
+recognition.onresult = async (event) => {
+    const text = event.results[event.results.length - 1][0].transcript.trim().toUpperCase();
+    transcriptEl.textContent = text;
+
+    resetInactivityTimer();
+
+    // MODO SUSPENDIDO
+    if (isSleeping) {
+        if (text.includes("COSMO")) {
+            wakeUp();
+        }
+        return;
+    }
+
+    // PROCESAR COMANDO
+    const result = await interpretCommand(text);
+    responseEl.textContent = result;
+};
+
+recognition.onerror = (e) => {
+    console.error("Error:", e);
+};
+
+recognition.onend = () => {
+    recognition.start();
+};
+
+// ================== START ==================
+async function initApp() {
+    await fetchApiKey();  // 🔐 primero obtenemos la API Key
+    recognition.start();  // 🎤 luego iniciamos reconocimiento
+    resetInactivityTimer();
+}
+
+initApp();
