@@ -65,14 +65,33 @@ async function interpretCommand(text) {
     }
 
     const prompt = `
-Devuelve SOLO una de estas opciones exactamente:
-avanzar, retroceder, detener, vuelta derecha, vuelta izquierda,
-90° derecha, 90° izquierda, 360° derecha, 360° izquierda
+Eres un sistema de control por voz para un robot llamado COSMO.
 
-Si no corresponde, devuelve exactamente:
+Debes interpretar el texto del usuario y devolver SOLO UNO de los siguientes
+comandos EXACTOS, sin explicaciones, sin comillas, sin texto adicional:
+
+avanzar
+retroceder
+detener
+vuelta derecha
+vuelta izquierda
+90° derecha
+90° izquierda
+360° derecha
+360° izquierda
+
+Reglas IMPORTANTES:
+- Acepta sinónimos, variaciones, conjugaciones y errores comunes.
+- Ignora la palabra "COSMO" si aparece.
+- Frases como "avanza", "avanzar", "muévete hacia adelante" → avanzar
+- Frases como "gira a la derecha", "voltea derecha" → vuelta derecha
+- Frases como "noventa grados derecha" → 90° derecha
+- Frases como "giro completo izquierda", "tres sesenta izquierda" → 360° izquierda
+- Si NO corresponde a ningún comando, responde EXACTAMENTE:
 Orden no reconocida
 
-Texto: "${text}"
+Texto del usuario:
+"${text}"
 `;
 
     try {
