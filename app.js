@@ -148,7 +148,7 @@ recognition.onresult = async (event) => {
     const result = await interpretCommand(text);
     responseEl.textContent = result;
 
-    // 🔊 Decir el comando por voz (solo si es válido)
+    // Decir el comando por voz (solo si es válido)
     if (result && result !== "Orden no reconocida") {
         speak(result);
     }
