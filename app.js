@@ -18,6 +18,18 @@ recognition.lang = "es-ES";
 recognition.continuous = true;
 recognition.interimResults = false;
 
+// ================== VOZ (TEXT TO SPEECH) ==================
+function speak(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "es-ES";
+    utterance.rate = 0.9;
+    utterance.pitch = 0.8;
+    utterance.volume = 1;
+
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+}
+
 // ================== OBTENER API KEY ==================
 async function fetchApiKey() {
     try {
@@ -135,6 +147,11 @@ recognition.onresult = async (event) => {
     // PROCESAR COMANDO
     const result = await interpretCommand(text);
     responseEl.textContent = result;
+
+    // 🔊 Decir el comando por voz (solo si es válido)
+    if (result && result !== "Orden no reconocida") {
+        speak(result);
+    }
 };
 
 recognition.onerror = (e) => {
@@ -147,9 +164,15 @@ recognition.onend = () => {
 
 // ================== START ==================
 async function initApp() {
-    await fetchApiKey();  // 🔐 primero obtenemos la API Key
-    recognition.start();  // 🎤 luego iniciamos reconocimiento
+    await fetchApiKey();
+    recognition.start();
     resetInactivityTimer();
+
+    // 🎙 Presentación solo una vez por sesión
+    if (!sessionStorage.getItem("cosmoPresented")) {
+        speak("Hola, soy COSMO. Soy una inteligencia artificial que reconoce la voz e interpreta comandos hablados y los traduce en instrucciones específicas.");
+        sessionStorage.setItem("cosmoPresented", "true");
+    }
 }
 
 initApp();
