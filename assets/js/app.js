@@ -59,7 +59,7 @@ function goToSleep() {
     isSleeping = true;
     statusBadge.textContent = "SUSPENDIDO";
     statusBadge.className = "badge bg-secondary";
-    responseEl.textContent = "Sistema suspendido. Di 'WANDA' para despertar.";
+    responseEl.textContent = "Sistema suspendido. Di 'COSMO' para despertar.";
 }
 
 function wakeUp() {
@@ -146,7 +146,7 @@ recognition.onresult = async (event) => {
 
     // MODO SUSPENDIDO
     if (isSleeping) {
-        if (text.includes("WANDA")) {
+        if (text.includes("COSMO")) {
             wakeUp();
         }
         return;
@@ -178,7 +178,7 @@ async function initApp() {
 
     // 🎙 Presentación solo una vez por sesión
     if (!sessionStorage.getItem("cosmoPresented")) {
-        speak("Hola, soy WANDA. Soy una inteligencia artificial que reconoce la voz e interpreta comandos hablados y los traduce en instrucciones específicas.");
+        speak("Hola, soy COSMO. Soy una inteligencia artificial que reconoce la voz e interpreta comandos hablados y los traduce en instrucciones específicas.");
         sessionStorage.setItem("cosmoPresented", "true");
     }
 }
