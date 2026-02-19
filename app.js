@@ -4,7 +4,7 @@ const responseEl = document.getElementById("response");
 
 let isSleeping = false;
 let inactivityTimer = null;
-let OPENAI_API_KEY = null; // ← ahora será dinámica
+let OPENAI_API_KEY = null; 
 
 // ================== CONFIG ==================
 const INACTIVITY_TIME = 5000; // 5 segundos
@@ -59,7 +59,7 @@ function goToSleep() {
     isSleeping = true;
     statusBadge.textContent = "SUSPENDIDO";
     statusBadge.className = "badge bg-secondary";
-    responseEl.textContent = "Sistema suspendido. Di 'COSMO' para despertar.";
+    responseEl.textContent = "Sistema suspendido. Di 'WANDA' para despertar.";
 }
 
 function wakeUp() {
@@ -69,15 +69,14 @@ function wakeUp() {
     responseEl.textContent = "Sistema activado. Escuchando órdenes...";
 }
 
-// ================== OPENAI ==================
+// ================== OPENAI (CORREGIDO) ==================
 async function interpretCommand(text) {
 
     if (!OPENAI_API_KEY) {
         return "Error: API Key no disponible";
     }
 
-    const prompt = `
-Eres un sistema de control por voz para un robot llamado COSMO.
+    const prompt = `Eres un sistema de control por voz para un robot llamado WANDA.
 
 Debes interpretar el texto del usuario y devolver SOLO UNO de los siguientes
 comandos EXACTOS, sin explicaciones, sin comillas, sin texto adicional:
@@ -94,17 +93,21 @@ vuelta izquierda
 
 Reglas IMPORTANTES:
 - Acepta sinónimos, variaciones, conjugaciones y errores comunes.
-- Ignora la palabra "COSMO" si aparece.
+- Ignora la palabra "WANDA" si aparece.
 - Frases como "avanza", "avanzar", "muévete hacia adelante" → avanzar
+- Frases como "para", "alto", "stop", "detente", "frena", "quieto", "cálmate" → detener
 - Frases como "gira a la derecha", "voltea derecha" → vuelta derecha
+- Frases como "gira a la izquierda", "voltea izquierda" → vuelta izquierda
 - Frases como "noventa grados derecha" → 90° derecha
+- Frases como "noventa grados izquierda" → 90° izquierda
+- Frases como "giro completo derecha", "vuelta completa derecha", "tres sesenta derecha" → 360° derecha
 - Frases como "giro completo izquierda", "tres sesenta izquierda" → 360° izquierda
-- Si NO corresponde a ningún comando, responde EXACTAMENTE:
+
+Si NO corresponde a ningún comando, responde EXACTAMENTE:
 Orden no reconocida
 
 Texto del usuario:
-"${text}"
-`;
+"${text}"`;
 
     try {
         const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -121,7 +124,12 @@ Texto del usuario:
         });
 
         const data = await response.json();
-        return data.choices[0].message.content.trim();
+        
+        if (data.choices && data.choices.length > 0) {
+            return data.choices[0].message.content.trim();
+        } else {
+             return "Error: Respuesta vacía de IA";
+        }
 
     } catch (error) {
         console.error("Error llamando a OpenAI:", error);
@@ -138,7 +146,7 @@ recognition.onresult = async (event) => {
 
     // MODO SUSPENDIDO
     if (isSleeping) {
-        if (text.includes("COSMO")) {
+        if (text.includes("WANDA")) {
             wakeUp();
         }
         return;
@@ -149,7 +157,7 @@ recognition.onresult = async (event) => {
     responseEl.textContent = result;
 
     // Decir el comando por voz (solo si es válido)
-    if (result && result !== "Orden no reconocida") {
+    if (result && result !== "Orden no reconocida" && !result.startsWith("Error")) {
         speak(result);
     }
 };
@@ -170,7 +178,7 @@ async function initApp() {
 
     // 🎙 Presentación solo una vez por sesión
     if (!sessionStorage.getItem("cosmoPresented")) {
-        speak("Hola, soy COSMO. Soy una inteligencia artificial que reconoce la voz e interpreta comandos hablados y los traduce en instrucciones específicas.");
+        speak("Hola, soy WANDA. Soy una inteligencia artificial que reconoce la voz e interpreta comandos hablados y los traduce en instrucciones específicas.");
         sessionStorage.setItem("cosmoPresented", "true");
     }
 }

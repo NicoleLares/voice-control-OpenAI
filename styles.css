@@ -1,36 +1,38 @@
 /* =====================================================
-   VARIABLES CYBERPUNK (AJUSTADAS)
+   VARIABLES SYNTHWAVE (MIAMI VICE STYLE)
+   Cian (#00F3FF) + Púrpura (#BD00FF)
 ===================================================== */
 :root {
-    --verde-lima: #00FF00;
+    /* Color Principal: Cian Eléctrico */
+    --color-neon: #00F3FF;
+    
+    /* Color Secundario: Magenta Neón (Para contrastes) */
+    --color-accent: #BD00FF;
 
-    /* Glow controlado (menos agresivo) */
-    --verde-brillo: rgba(0, 255, 0, 0.55);
-    --verde-suave: rgba(0, 255, 0, 0.25);
+    /* Glow (Cian dominante) */
+    --neon-brillo: rgba(0, 243, 255, 0.65);
+    --neon-suave: rgba(189, 0, 255, 0.35); /* Sombra morada */
 
-    /* Fondos (NO negro puro) */
-    --bg-start: #12141d;
-    --bg-end: #1f2233;
+    /* Fondos: Indigo Profundo */
+    --bg-start: #120429; 
+    --bg-end: #0a021a;
 
-    --panel: rgba(31, 34, 51, 0.65);
-    --border-soft: rgba(255, 255, 255, 0.12);
+    /* Panel: Púrpura oscuro translúcido */
+    --panel: rgba(45, 10, 70, 0.75);
+    --border-soft: rgba(0, 243, 255, 0.3);
 }
 
 /* =====================================================
    ANIMACIONES
 ===================================================== */
 @keyframes pulseGlow {
-    0% {
-        box-shadow: 0 0 3px var(--verde-suave);
+    0% { box-shadow: 0 0 5px var(--neon-suave); }
+    50% { 
+        box-shadow: 
+            0 0 15px var(--neon-brillo), 
+            0 0 25px var(--color-accent); /* Pulso bicolor */
     }
-    50% {
-        box-shadow:
-            0 0 10px var(--verde-brillo),
-            0 0 18px var(--verde-suave);
-    }
-    100% {
-        box-shadow: 0 0 3px var(--verde-suave);
-    }
+    100% { box-shadow: 0 0 5px var(--neon-suave); }
 }
 
 @keyframes scanLine {
@@ -40,29 +42,32 @@
 
 @keyframes glitch {
     0%   { transform: translate(0); }
-    20%  { transform: translate(-1px, 1px); }
-    40%  { transform: translate(1px, -1px); }
-    60%  { transform: translate(-1px, -1px); }
-    80%  { transform: translate(1px, 1px); }
+    20%  { transform: translate(-2px, 2px); }
+    40%  { transform: translate(2px, -2px); }
+    60%  { transform: translate(-2px, -2px); }
+    80%  { transform: translate(2px, 2px); }
     100% { transform: translate(0); }
 }
 
 /* =====================================================
-   BODY / FONDO
+   BODY / FONDO GRID RETRO
 ===================================================== */
 body {
-    background: radial-gradient(
-        circle at top,
-        var(--bg-start) 0%,
-        var(--bg-end) 65%
-    );
-    color: #f0f0f0;
-    font-family: "Inter", "Segoe UI", sans-serif;
+    background-color: var(--bg-end);
+    /* Efecto de rejilla (Grid) característico del estilo */
+    background-image: 
+        linear-gradient(rgba(189, 0, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(189, 0, 255, 0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center top;
+
+    color: #e0faff;
+    font-family: "Segoe UI", "Roboto", "Helvetica", sans-serif;
     position: relative;
     overflow-x: hidden;
 }
 
-/* SCAN LINE */
+/* SCAN LINE (Rosa para contraste con el texto azul) */
 body::before {
     content: "";
     position: fixed;
@@ -71,10 +76,10 @@ body::before {
     background: linear-gradient(
         to bottom,
         transparent 0%,
-        rgba(0, 255, 0, 0.025) 50%,
+        rgba(255, 0, 255, 0.05) 50%,
         transparent 100%
     );
-    animation: scanLine 7s linear infinite;
+    animation: scanLine 6s linear infinite;
     z-index: 1;
 }
 
@@ -82,66 +87,82 @@ body::before {
    NAVBAR
 ===================================================== */
 .navbar {
-    background: linear-gradient(90deg, #151827, #1f2233);
-    border-bottom: 1px solid var(--border-soft);
+    background: linear-gradient(90deg, #180536, #240046);
+    border-bottom: 2px solid var(--color-accent); /* Borde rosa neón */
+    box-shadow: 0 0 15px rgba(189, 0, 255, 0.3);
     z-index: 2;
 }
 
 .navbar-brand {
-    color: #f0f0f0 !important;
-    font-weight: 600;
+    color: #fff !important;
+    font-weight: 700;
+    text-shadow: 0 0 5px var(--color-neon);
 }
 
 /* =====================================================
    STATUS BADGE
 ===================================================== */
 .badge {
-    animation: pulseGlow 2.5s infinite;
+    animation: pulseGlow 3s infinite;
 }
 
 .badge.bg-success {
-    background-color: var(--verde-lima) !important;
+    background-color: var(--color-neon) !important; /* Cian */
     color: #000 !important;
-    font-weight: 600;
+    font-weight: 700;
+    box-shadow: 0 0 10px var(--color-neon);
 }
 
 .badge.bg-secondary {
-    background-color: #3a3d52 !important;
+    background-color: #2d1b4e !important;
     color: #c0c3d8 !important;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
 /* =====================================================
    TITULOS
 ===================================================== */
 h1, h5 {
-    color: #f0f0f0;
+    color: #ffffff;
     font-weight: 600;
 }
 
 h1 strong {
-    color: var(--verde-lima);
+    color: var(--color-accent); /* Título en Rosa */
+    text-shadow: 0 0 8px var(--color-accent);
 }
 
 /* =====================================================
-   CARD HUD
+   CARD HUD (FORMAS GEOMETRICAS)
 ===================================================== */
 .card {
     background: var(--panel);
     border: 1px solid var(--border-soft);
-    border-radius: 18px;
-    backdrop-filter: blur(14px);
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.45);
+    border-radius: 0px; /* Bordes cuadrados retro */
+    
+    /* Recorte en la esquina inferior derecha */
+    clip-path: polygon(
+        0 0, 
+        100% 0, 
+        100% 90%, 
+        95% 100%, 
+        0 100%
+    );
+    
+    box-shadow: 0 0 30px rgba(189, 0, 255, 0.15);
     position: relative;
     z-index: 2;
 }
 
+/* Borde interno decorativo (Rosa) */
 .card::before {
     content: "";
     position: absolute;
-    inset: 10px;
-    border: 1px dashed rgba(255, 255, 255, 0.08);
+    inset: 5px;
+    border: 1px solid var(--color-accent);
+    opacity: 0.3;
     pointer-events: none;
-    border-radius: 12px;
+    /* Sin border-radius para coincidir con la forma */
 }
 
 /* =====================================================
@@ -149,59 +170,57 @@ h1 strong {
 ===================================================== */
 #transcript {
     font-size: 1.1rem;
-    letter-spacing: 1.5px;
-    color: #cfd2ff;
+    letter-spacing: 1px;
+    color: #ffffff;
+    text-shadow: 2px 2px 0px #bd00ff; /* Sombra sólida rosa estilo retro */
 }
 
 /* =====================================================
    ALERT RESPONSE
 ===================================================== */
 #response {
-    background: rgba(0, 255, 0, 0.08);
-    border: 1px solid rgba(0, 255, 0, 0.6);
-    color: var(--verde-lima);
+    background: rgba(0, 243, 255, 0.1);
+    border: 1px solid var(--color-neon);
+    color: var(--color-neon); /* Texto Cian */
     font-size: 1.2rem;
     font-weight: 600;
     animation: pulseGlow 3s infinite;
-    box-shadow: inset 0 0 12px rgba(0, 255, 0, 0.25);
-    border-radius: 12px;
+    box-shadow: inset 0 0 15px rgba(0, 243, 255, 0.25);
+    border-radius: 4px; /* Ligeramente redondeado */
 }
 
 /* =====================================================
-   COMANDOS DISPONIBLES (HUD STYLE)
+   COMANDOS DISPONIBLES
 ===================================================== */
 
 .card-title {
-    color: var(--verde-lima);
+    color: var(--color-accent); /* Rosa */
     letter-spacing: 1px;
     text-transform: uppercase;
     font-size: 0.95rem;
+    font-style: italic;
 }
 
 .list-group-item {
     background: transparent;
     border: none;
-    color: #dfe3ff;
+    color: #d1f7ff;
     font-weight: 500;
     letter-spacing: 1px;
     padding: 10px 14px;
     transition: all 0.25s ease;
-    border-radius: 8px;
-}
-
-.list-group-flush .list-group-item {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(189, 0, 255, 0.15);
 }
 
 .list-group-item:hover {
-    background: rgba(0, 255, 0, 0.08);
-    color: var(--verde-lima);
-    box-shadow: 0 0 10px var(--verde-suave);
-    transform: translateX(4px);
+    background: linear-gradient(90deg, rgba(0, 243, 255, 0.15), transparent);
+    color: #fff;
+    text-shadow: 0 0 5px var(--color-neon);
+    transform: translateX(6px);
 }
 
 .card small {
-    color: #9fa4ff;
+    color: #a48cb0;
     font-style: italic;
 }
 
@@ -209,8 +228,8 @@ h1 strong {
    FOOTER
 ===================================================== */
 footer {
-    background: linear-gradient(90deg, #151827, #1f2233);
-    border-top: 1px solid var(--border-soft);
+    background: #0a021a;
+    border-top: 1px solid var(--color-accent);
     color: #a0a3c0;
     font-size: 0.9rem;
 }
@@ -219,15 +238,15 @@ footer {
    TEXTOS SECUNDARIOS
 ===================================================== */
 .text-muted {
-    color: #a0a3c0 !important;
+    color: #a48cb0 !important;
 }
 
 /* =====================================================
-   GLITCH (ACTIVADO POR JS)
+   GLITCH (BICOLOR: CIAN + ROSA)
 ===================================================== */
 .glitch {
     animation: glitch 0.15s infinite;
     text-shadow:
-        -1px 0 rgba(0, 255, 0, 0.6),
-         1px 0 rgba(150, 255, 150, 0.6);
+        -2px 0 var(--color-accent),  /* Sombra Rosa a la izquierda */
+         2px 0 var(--color-neon);    /* Sombra Cian a la derecha */
 }
